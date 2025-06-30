@@ -8,7 +8,7 @@
 using namespace std;
 //celda del laberinto
 struct Cell {
-    bool visited = false; /
+    bool visited = false; 
     bool top = true, bottom = true, left = true, right = true; //cada celda tiene 4 paredes y un booleano para saber si fue visitada
 };
 
