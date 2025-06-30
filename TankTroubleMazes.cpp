@@ -29,8 +29,8 @@ class Maze {
         }
         if (horizontal) {
             if (h <= 2) return;
-            int wallY = y + 1 + rand() % (h - 2); // muro horizontal
-            int numPassages = 1 + rand() % 2; // 1 o 2 huecos
+            int wallY = y + 1 + rand() % (h - 2);
+            int numPassages = std::max(w / 2, 2); // muchos huecos
             vector<int> passages;
             while ((int)passages.size() < numPassages) {
                 int px = x + rand() % w;
@@ -46,8 +46,8 @@ class Maze {
             divide(x, wallY, w, y + h - wallY);
         } else {
             if (w <= 2) return;
-            int wallX = x + 1 + rand() % (w - 2); // muro vertical
-            int numPassages = 1 + rand() % 2; // 1 o 2 huecos
+            int wallX = x + 1 + rand() % (w - 2);
+            int numPassages = std::max(h / 2, 2); // muchos huecos
             vector<int> passages;
             while ((int)passages.size() < numPassages) {
                 int py = y + rand() % h;
@@ -98,11 +98,32 @@ public:
     }
 
     void generateRecursiveDivision() {
-        // Inicializa todas las paredes
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x)
                 grid[y][x] = Cell();
         divide(0, 0, width, height);
+        abrirMasCaminos(width * height / 3); // o incluso más
+    }
+
+    void abrirMasCaminos(int cantidad) {
+        for (int i = 0; i < cantidad; ++i) {
+            int y = 1 + rand() % (height - 2);
+            int x = 1 + rand() % (width - 2);
+            int dir = rand() % 4;
+            if (dir == 0 && y > 0) {
+                grid[y][x].top = false;
+                grid[y-1][x].bottom = false;
+            } else if (dir == 1 && y < height-1) {
+                grid[y][x].bottom = false;
+                grid[y+1][x].top = false;
+            } else if (dir == 2 && x > 0) {
+                grid[y][x].left = false;
+                grid[y][x-1].right = false;
+            } else if (dir == 3 && x < width-1) {
+                grid[y][x].right = false;
+                grid[y][x+1].left = false;
+            }
+        }
     }
 
     void print() {
@@ -127,6 +148,7 @@ int main() { //Genera laberintos con dos algoritmos diferentes
 
     cout << "DFS (Backtracking):" << endl;
     m.generate();
+    m.abrirMasCaminos(30); // Abre paredes extra
     m.print();
 
     cout << "\nDivision Recursiva:" << endl;
